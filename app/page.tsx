@@ -36,6 +36,9 @@ export default function Home() {
   return (
     <main className="p-6 max-w-md mx-auto">
       <UserHeader />
+      <p className="text-sm text-gray-400 mb-2">
+        Add at least 3, and up to 5 ingredients.
+      </p>
 
       {!email && (
         <button
@@ -50,7 +53,10 @@ export default function Home() {
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          addIngredient()
+          if (ingredient.trim() && fridge.length < 5) {
+            setFridge((prev) => [...prev, ingredient.trim()])
+            setIngredient("")
+          }
         }}
         className="flex gap-2 mb-4"
       >
@@ -60,10 +66,14 @@ export default function Home() {
           value={ingredient}
           onChange={(e) => setIngredient(e.target.value)}
           placeholder="e.g., kimchi, egg..."
+          disabled={fridge.length >= 5}
         />
         <button
-          className="bg-green-600 text-white px-4 py-2 rounded"
           type="submit"
+          disabled={fridge.length >= 5}
+          className={`px-4 py-2 rounded text-white ${
+            fridge.length >= 5 ? "bg-gray-400 cursor-not-allowed" : "bg-green-600"
+          }`}
         >
           Add
         </button>
@@ -73,6 +83,14 @@ export default function Home() {
           <li key={idx}>{item}</li>
         ))}
       </ul>
+      {fridge.length >= 3 && (
+        <button
+          onClick={() => alert("This will call your AI API later")}
+          className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+          >
+            AI Cook Prediction!
+          </button>
+      )}
     </main >
   )
 }
