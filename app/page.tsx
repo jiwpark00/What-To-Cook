@@ -46,7 +46,7 @@ export default function Home() {
         </button>
       )}
 
-      <h1 className="text-2xl font-bold mb-4">What's in your fridge?</h1>
+      <h1 className="text-2xl font-bold mb-4">What&apos;s in your fridge?</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault()
