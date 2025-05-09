@@ -24,13 +24,6 @@ export default function Home() {
     checkSession()
   }, [])
 
-  const addIngredient = () => {
-    if (ingredient.trim()) {
-      setFridge((prev) => [...prev, ingredient.trim()])
-      setIngredient("")
-    }
-  }
-
   if (checkingAuth) return <p className="p-4">Loading...</p>
 
   return (
