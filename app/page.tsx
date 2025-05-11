@@ -10,14 +10,14 @@ async function deleteIngredientFromDB(item: string) {
   const user = session?.user
   if (!user) return
 
-  const { data, error: dbError } = await supabase
+  const { error: dbError } = await supabase
     .from("fridge_items")
     .delete()
     .eq("item_name", item)
     .eq("user_id", user.id)
 
   if (dbError) {
-    console.error("Delete failed:", error)
+    console.error("Delete failed:", dbError)
   }
 }
 
