@@ -57,7 +57,7 @@ export default function Home() {
       setCheckingAuth(false)
 
       if (user) {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("fridge_items")
           .select("item_name")
           .eq("user_id", user.id)
