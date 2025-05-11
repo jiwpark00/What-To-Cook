@@ -26,10 +26,10 @@ export default function UserHeader() {
 
     return (
         <div className="flex items-center justify-bottom bg-gray-100 p-4 mb-4 rounded">
-            <span className="text-sm text-gray-700">Logged in as: <strong>{email}</strong></span>
+            <span className="text-sm text-gray-700">Logged in! You are viewing as <strong>{email}</strong></span>
             <button
                 onClick={handleLogout}
-                className="text-sm text-red-600 border border-red-600 px-3 py-1 rounded hover:bg-red-100"
+                className="text-sm text-red-600 border border-red-600 px-4 py-1 rounded hover:bg-red-100 whitespace-nowrap"
             >
                 Log out
             </button>

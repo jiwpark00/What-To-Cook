@@ -8,6 +8,7 @@ import UserHeader from "@/components/UserHeader"
 async function deleteIngredientFromDB(item: string) {
   const { data: { session } } = await supabase.auth.getSession()
   const user = session?.user
+
   if (!user) return
 
   const { error: dbError } = await supabase
@@ -34,6 +35,20 @@ async function saveIngredientToDB(item: string) {
 
 export default function Home() {
 
+  const INGREDIENTS = [
+    "apple", "avocado", "bacon", "banana", "basil", "beef", "bell pepper", "broccoli",
+    "butter", "cabbage", "carrot", "cauliflower", "celery", "cheese", "chicken",
+    "cilantro", "cinnamon", "coconut", "corn", "cucumber", "egg", "eggplant", "eel",
+    "garlic", "ginger", "grape", "green bean", "green onion", "honey", "jalapeño",
+    "kale", "ketchup", "kimchi", "lemon", "lettuce", "lime", "mayo", "milk", "mushroom",
+    "mustard", "noodle", "oat", "olive", "onion", "orange", "paprika", "parsley",
+    "pasta", "peach", "peanut", "pear", "peas", "pepper", "pineapple", "pork",
+    "potato", "pumpkin", "quinoa", "radish", "rice", "rosemary", "salmon", "salt",
+    "sausage", "shrimp", "soy sauce", "spinach", "squash", "steak", "strawberry",
+    "sugar", "sweet potato", "tofu", "tomato", "tuna", "turkey", "vinegar", "walnut",
+    "watermelon", "wheat", "yam", "yogurt", "zucchini"
+  ]
+
   const [email, setEmail] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
@@ -44,6 +59,7 @@ export default function Home() {
     await deleteIngredientFromDB(item)
   }
   const [language, setLanguage] = useState("")
+  const [suggestions, setSuggestions] = useState<string[]>([])
 
   const router = useRouter()
 
@@ -55,6 +71,12 @@ export default function Home() {
 
       setEmail(email)
       setCheckingAuth(false)
+
+      if (user && !user.email_confirmed_at) {
+        alert("Please verify your email to use this app.")
+        await supabase.auth.signOut()
+        return
+      }
 
       if (user) {
         const { data } = await supabase
@@ -98,6 +120,11 @@ export default function Home() {
 
           const cleaned = ingredient.trim().toLowerCase()
           const isValidFormat = /^[\p{L}\p{N}\s\-]+$/u.test(cleaned)
+          
+          if (!INGREDIENTS.includes(cleaned)) {
+            setError("Please select a valid ingredient from the list.")
+            return
+          }
 
           if (!cleaned) {
             setError("Ingredient cannot be empty.")
@@ -136,10 +163,34 @@ export default function Home() {
           className="flex-1 border p-2 rounded"
           type="text"
           value={ingredient}
-          onChange={(e) => setIngredient(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setIngredient(value)
+
+            const cleaned = value.trim().toLowerCase()
+            const matches = INGREDIENTS.filter((item) => item.toLowerCase().startsWith(cleaned)
+          )
+          setSuggestions(matches.slice(0, 5)) // Limit to 5 suggestions
+          }}
           placeholder="e.g., lettuce, egg..."
           disabled={fridge.length >= 5}
         />
+        {suggestions.length > 0 && (
+          <ul className="bg-white text-black border rounded mt-1">
+            {suggestions.map((item, idx) => (
+              <li
+                key={idx}
+                className="px-2 py-1 hover:bg-gray-200 cursor-pointer"
+                onClick={() => {
+                  setIngredient(item)
+                  setSuggestions([]) // clear suggestions after selection
+                }}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        )}
         <button
           type="submit"
           disabled={fridge.length >= 5}
@@ -167,7 +218,9 @@ export default function Home() {
       </ul>
       <div className="mb-4">
         <label htmlFor="language" className="block text-sm font-medium text-gray-200 mb-1">
-          Preferred Response Language
+          Preferred Response Language (Optional)
+          <br/>
+          *Default will be English
         </label>
         <input
           id="language"
@@ -178,12 +231,28 @@ export default function Home() {
         />
       </div>
       {fridge.length >= 3 && (
+        <div className="mt-4">
         <button
-          onClick={() => alert("This will call your AI API later")}
-          className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+          onClick={() => {
+            if (email) {
+            alert("This will call your AI API later")
+          }
+        }}
+          className={`px-4 py-2 rounded text-white ${
+            !email 
+            ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed" 
+            : "bg-purple-600 hover:bg-purple-700"
+           }`}
         >
           AI Cook Prediction!
         </button>
+
+        {!email && (
+          <p className="mt-2 text-sm text-yellow-300">
+            🔒 You must log in to use this feature.
+          </p>
+        )}
+        </div>
       )}
     </main >
   )
