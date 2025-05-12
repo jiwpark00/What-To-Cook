@@ -1,5 +1,3 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { cookies } from "next/headers"
 import { createClient } from "@supabase/supabase-js"
 
 export default async function RecentLogs() {
