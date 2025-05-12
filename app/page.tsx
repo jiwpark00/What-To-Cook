@@ -231,25 +231,30 @@ export default function Home() {
       </ul>
       <div className="mb-4">
         <label htmlFor="language" className="block text-sm font-medium text-gray-200 mb-1">
-          Preferred Response Language (Optional) - English, Korean, Spanish are currently tested and available.
+          Preferred Response Language (Optional)
+          <br />
+          English, Korean, Spanish are currently tested and available.
           <br />
           *Default will be English
         </label>
-        <input
+        <select
           id="language"
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          placeholder="e.g., English, Spanish, Korean"
           className="w-full border p-2 rounded text-white"
-        />
+        >
+          <option value="">English (default)</option>
+          {ALLOWED_LANGUAGES.filter((lang) => lang !== "English").map((lang) => (
+            <option key={lang} value={lang}>{lang}</option>
+          ))}
+        </select>
       </div>
       {fridge.length >= 3 && (
         <div className="mt-4">
           <button
             onClick={async () => {
 
-              const cleanedLanguage = (language || "English").trim()
-              const selectedLanguage = cleanedLanguage.charAt(0).toUpperCase() + cleanedLanguage.slice(1).toLowerCase()
+              const selectedLanguage = language || "English"
 
               if (!ALLOWED_LANGUAGES.includes(selectedLanguage)) {
                 alert("Please choose a supported language: English, Korean, or Spanish.")
