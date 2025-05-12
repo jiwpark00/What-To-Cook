@@ -73,7 +73,7 @@ export default function Home() {
       return
     }
 
-    alert(`(Stub) Would send this to: $(emailToSend)`)
+    alert(`Eventually, we will have a feature to send to your email`)
   }
 
   useEffect(() => {
