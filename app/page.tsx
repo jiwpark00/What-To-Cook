@@ -49,6 +49,8 @@ export default function Home() {
     "watermelon", "wheat", "yam", "yogurt", "zucchini"
   ]
 
+  const ALLOWED_LANGUAGES = ["English", "Korean", "Spanish"]
+
   const [email, setEmail] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
@@ -60,8 +62,19 @@ export default function Home() {
   }
   const [language, setLanguage] = useState("")
   const [suggestions, setSuggestions] = useState<string[]>([])
+  const [aiResult, setAiResult] = useState<string | null>(null)
+  const [emailToSend, setEmailToSend] = useState("")
 
   const router = useRouter()
+
+  const handleEmailSend = () => {
+    if (!emailToSend.trim()) {
+      alert("Please enter your email first.")
+      return
+    }
+
+    alert(`(Stub) Would send this to: $(emailToSend)`)
+  }
 
   useEffect(() => {
     const checkSession = async () => {
@@ -120,7 +133,7 @@ export default function Home() {
 
           const cleaned = ingredient.trim().toLowerCase()
           const isValidFormat = /^[\p{L}\p{N}\s\-]+$/u.test(cleaned)
-          
+
           if (!INGREDIENTS.includes(cleaned)) {
             setError("Please select a valid ingredient from the list.")
             return
@@ -169,8 +182,8 @@ export default function Home() {
 
             const cleaned = value.trim().toLowerCase()
             const matches = INGREDIENTS.filter((item) => item.toLowerCase().startsWith(cleaned)
-          )
-          setSuggestions(matches.slice(0, 5)) // Limit to 5 suggestions
+            )
+            setSuggestions(matches.slice(0, 5)) // Limit to 5 suggestions
           }}
           placeholder="e.g., lettuce, egg..."
           disabled={fridge.length >= 5}
@@ -218,40 +231,92 @@ export default function Home() {
       </ul>
       <div className="mb-4">
         <label htmlFor="language" className="block text-sm font-medium text-gray-200 mb-1">
-          Preferred Response Language (Optional)
-          <br/>
+          Preferred Response Language (Optional) - English, Korean, Spanish are currently tested and available.
+          <br />
           *Default will be English
         </label>
         <input
           id="language"
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          placeholder="e.g., English, Español, 한국어, ..."
+          placeholder="e.g., English, Spanish, Korean"
           className="w-full border p-2 rounded text-white"
         />
       </div>
       {fridge.length >= 3 && (
         <div className="mt-4">
-        <button
-          onClick={() => {
-            if (email) {
-            alert("This will call your AI API later")
-          }
-        }}
-          className={`px-4 py-2 rounded text-white ${
-            !email 
-            ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed" 
-            : "bg-purple-600 hover:bg-purple-700"
-           }`}
-        >
-          AI Cook Prediction!
-        </button>
+          <button
+            onClick={async () => {
 
-        {!email && (
-          <p className="mt-2 text-sm text-yellow-300">
-            🔒 You must log in to use this feature.
-          </p>
-        )}
+              const cleanedLanguage = (language || "English").trim()
+              const selectedLanguage = cleanedLanguage.charAt(0).toUpperCase() + cleanedLanguage.slice(1).toLowerCase()
+
+              if (!ALLOWED_LANGUAGES.includes(selectedLanguage)) {
+                alert("Please choose a supported language: English, Korean, or Spanish.")
+                return
+              }
+
+              try {
+                const res = await fetch("/api/ideate", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    ingredients: fridge,
+                    language: selectedLanguage,
+                    userId: (await supabase.auth.getSession()).data.session?.user.id,
+                  }),
+                })
+
+                const data = await res.json()
+
+                if (data.result) {
+                  setAiResult(data.result)
+                } else {
+                  alert(data.error || "Something went wrong.")
+                }
+              } catch (err) {
+                console.log(err)
+                alert("Failed to research the server.")
+              }
+            }}
+            className={`px-4 py-2 rounded text-white ${!email
+              ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed"
+              : "bg-purple-600 hover:bg-purple-700"
+              }`}
+          >
+            AI Cook Prediction!
+          </button>
+
+          {!email && (
+            <p className="mt-2 text-sm text-yellow-300">
+              🔒 You must log in to use this feature.
+            </p>
+          )}
+
+          {aiResult && (
+            <div className="mt-4 bg-white text-black p-4 rounded shadow whitespace-pre-wrap">
+              {aiResult}
+              {/* email button below*/}
+              <div className="mt-4">
+                <label className="block mb-1 text-sm font-medium text-gray-800">Send to your email:</label>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="use your email"
+                    className="flex-1 border p-2 rounded"
+                    value={emailToSend}
+                    onChange={(e) => setEmailToSend(e.currentTarget.value)}
+                  />
+                  <button
+                    onClick={handleEmailSend}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </main >
