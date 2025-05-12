@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 
 export default async function RecentLogs() {
 
-    const cookieStore = cookies()
+    const cookieStore = cookies();
 
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,7 +11,13 @@ export default async function RecentLogs() {
         {
             cookies: {
                 get(name) {
-                    return cookieStore.get(name)?.value
+                    return cookieStore.get(name)?.value;
+                },
+                set(name, value, options) {
+                    cookieStore.set(name, value, options);
+                },
+                remove(name, options) {
+                    cookieStore.set(name, "", { ...options, maxAge: 0 });
                 },
             },
         }
@@ -21,9 +27,13 @@ export default async function RecentLogs() {
         .from("llm_logs")
         .select("ingredients, response, created_at")
         .order("created_at", { ascending: false })
-        .limit(20)
+        .limit(20);
 
     if (error) return <p className="text-red-500">Failed to load logs</p>
+
+    if (!logs || logs.length === 0) {
+        return <p className="text-gray-500">No logs available yet</p>;
+    }
 
     return (
         <div className="mt-8">
