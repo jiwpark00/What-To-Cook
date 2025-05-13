@@ -51,6 +51,10 @@ export default function Home() {
 
   const ALLOWED_LANGUAGES = ["English", "Korean", "Spanish"]
 
+  const ALLOWED_EMAIL_DOMAINS = [
+    "gmail.com", "outlook.com", "icloud.com", "protonmail.com", "yahoo.com"
+  ]
+
   const [email, setEmail] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
@@ -64,8 +68,16 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [aiResult, setAiResult] = useState<string | null>(null)
   const [emailToSend, setEmailToSend] = useState("")
+  const [emailError, setEmailError] = useState<string | null>(null)
 
   const router = useRouter()
+
+  const validateEmailDomain = (email: string): boolean => {
+    if (!email || !email.includes('@')) return false
+
+    const domain = email.split('@')[1]
+    return ALLOWED_EMAIL_DOMAINS.includes(domain)
+  }
 
   const handleEmailSend = () => {
     if (!emailToSend.trim()) {
@@ -73,6 +85,13 @@ export default function Home() {
       return
     }
 
+    // Validate email domain
+    if (!validateEmailDomain(emailToSend)) {
+      setEmailError("Your email provider is not supported. Please use Gmail, Outlook, iCloud.com, Yahoo.com, or Protonmail.com")
+    return
+    }
+
+    setEmailError(null)
     alert(`Eventually, we will have a feature to send to your email`)
   }
 
@@ -84,6 +103,8 @@ export default function Home() {
 
       setEmail(email)
       setCheckingAuth(false)
+
+      if (!user) return
 
       if (user && !user.email_confirmed_at) {
         alert("Please verify your email to use this app.")
@@ -319,6 +340,9 @@ export default function Home() {
                     Send
                   </button>
                 </div>
+                {emailError && (
+                  <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                )}
               </div>
             </div>
           )}
