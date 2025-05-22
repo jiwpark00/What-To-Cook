@@ -49,6 +49,15 @@ export default function Home() {
     "watermelon", "wheat", "yam", "yogurt", "zucchini"
   ]
 
+  const UPDATE_INGREDIENTS = [
+    "mussel", "clam", "oyster", "crab", "catfish", "tilapia", "thai chili", "chicken stock",
+    "vegetable stock", "beef stock", "sour cream", "worcestershire sauce", "A1 sauce",
+    "bean sprouts", "mango", "thyme", "arugula", "coconut milk", "strawberry jelly", "pesto",
+    "miso", "fish sauce", "maple syrup", "hot sauce", "caper", "ranch dressing", "salsa"
+  ]
+
+  INGREDIENTS.push(...UPDATE_INGREDIENTS)
+
   const ALLOWED_LANGUAGES = ["English", "Korean", "Spanish"]
 
   const ALLOWED_EMAIL_DOMAINS = [
