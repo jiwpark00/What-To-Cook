@@ -5,12 +5,14 @@ import type { Database } from '@/lib/database.types' // your generated types
 
 const PAGE_SIZE = 20;
 
-export default async function RecentPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined>; }) {
+export default async function RecentPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>>; }) {
 
-    const raw = Array.isArray(searchParams?.page)
-        ? searchParams.page[0]
-        : searchParams?.page;
-    
+    const params = await searchParams;
+
+    const raw = Array.isArray(params.page)
+        ? params.page[0]
+        : params.page;
+
     const page = Number(raw ?? '0');
 
     const supabase = createServerComponentClient<Database>({
