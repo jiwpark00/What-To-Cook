@@ -5,8 +5,14 @@ import type { Database } from '@/lib/database.types' // your generated types
 
 const PAGE_SIZE = 20;
 
-export default async function RecentPage({ searchParams }: { searchParams: { page?: string } }) {
-    const page = Number(searchParams.page ?? '0');
+export default async function RecentPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined>; }) {
+
+    const raw = Array.isArray(searchParams?.page)
+        ? searchParams.page[0]
+        : searchParams?.page;
+    
+    const page = Number(raw ?? '0');
+
     const supabase = createServerComponentClient<Database>({
         cookies, // you must pass the cookie store in App Router
     });
