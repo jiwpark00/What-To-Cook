@@ -7,7 +7,9 @@ const PAGE_SIZE = 20;
 
 export default async function RecentPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>>; }) {
 
-    const params = await searchParams;
+    // debugging more promise issue
+    const params = ((await searchParams) as Record<string, string | string[] | undefined> | undefined) ??
+        {};
 
     const raw = Array.isArray(params.page)
         ? params.page[0]
