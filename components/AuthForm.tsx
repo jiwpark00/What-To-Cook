@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation"
 
 export default function AuthForm() {
     const router = useRouter()
-    const [error, setError] = useState('')
 
     useEffect(() => {
         const { data: listener } = supabase.auth.onAuthStateChange((event) => {
@@ -28,12 +27,6 @@ export default function AuthForm() {
             <div className="mb-4 text-sm text-blue-300 text-center p-3 bg-blue-900/20 rounded">
                 ℹ️ Only Gmail, Yahoo, Outlook and other major email providers are accepted
             </div>
-
-            {error && (
-                <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                    {error}
-                </div>
-            )}
 
             <Auth
                 supabaseClient={supabase}
