@@ -12,7 +12,7 @@ const ALLOWED_LANGUAGES = ["English", "Korean", "Spanish"]
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function POST(req: NextRequest) {
-    const { ingredients, language, userId } = await req.json()
+    const { ingredients, language, userId, dietaryRestriction } = await req.json()
 
     // 🔐 (Step 1) Check if user is allowed (from Supabase)
     // ⏳ (Step 2) Check rate limit (last 1 hour)
@@ -43,10 +43,27 @@ export async function POST(req: NextRequest) {
     }
 
     // LLM begins
+    let restrictionText = "";
+    switch (dietaryRestriction) {
+      case "nut_allergy":
+        restrictionText = "The user has a nut allergy. Do not suggest dishes or ingredients containing any kind of nuts.";
+        break;
+      case "gluten":
+        restrictionText = "The user requires gluten-free dishes. Do not suggest dishes or ingredients containing gluten (such as wheat, barley, rye, or regular soy sauce).";
+        break;
+      case "vegetarian":
+        restrictionText = "The user is vegetarian. Do not suggest dishes or ingredients containing meat, poultry, or seafood.";
+        break;
+      default:
+        restrictionText = "There are no dietary restrictions.";
+    }
+
     const prompt = `I have these ingredients: ${ingredients.join(", ")}.
-    Suggest a dish and up to 3 things I could buy easily at local grocery store to make this dish.
-    Respond in ${language}. If no language is given, respond in English.
-    Keep it short and practical.`
+${restrictionText}
+Suggest a dish and up to 3 things I could buy easily at local grocery store to make this dish.
+Respond in ${language}. If no language is given, respond in English.
+At the start of your response, clearly state which dietary restriction you considered: ${dietaryRestriction === "none" ? "No restrictions" : dietaryRestriction}.
+Keep it short and practical.`
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
 
@@ -66,6 +83,7 @@ export async function POST(req: NextRequest) {
         user_id: userId,
         ingredients,
         language,
+        dietaryRestriction,
         response: aiResponse,
     })
 

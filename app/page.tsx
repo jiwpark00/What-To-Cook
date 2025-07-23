@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import UserHeader from "@/components/UserHeader"
+import { INGREDIENTS } from "../lib/ingredients";
 
 async function deleteIngredientFromDB(item: string) {
   const { data: { session } } = await supabase.auth.getSession()
@@ -35,29 +36,6 @@ async function saveIngredientToDB(item: string) {
 
 export default function Home() {
 
-  const INGREDIENTS = [
-    "apple", "avocado", "bacon", "banana", "basil", "beef", "bell pepper", "broccoli",
-    "butter", "cabbage", "carrot", "cauliflower", "celery", "cheese", "chicken",
-    "cilantro", "cinnamon", "coconut", "corn", "cucumber", "egg", "eggplant", "eel",
-    "garlic", "ginger", "grape", "green bean", "green onion", "honey", "jalapeño",
-    "kale", "ketchup", "kimchi", "lemon", "lettuce", "lime", "mayo", "milk", "mushroom",
-    "mustard", "noodle", "oat", "olive", "onion", "orange", "paprika", "parsley",
-    "pasta", "peach", "peanut", "pear", "peas", "pepper", "pineapple", "pork",
-    "potato", "pumpkin", "quinoa", "radish", "rice", "rosemary", "salmon", "salt",
-    "sausage", "shrimp", "soy sauce", "spinach", "squash", "steak", "strawberry",
-    "sugar", "sweet potato", "tofu", "tomato", "tuna", "turkey", "vinegar", "walnut",
-    "watermelon", "wheat", "yam", "yogurt", "zucchini"
-  ]
-
-  const UPDATE_INGREDIENTS = [
-    "mussel", "clam", "oyster", "crab", "catfish", "tilapia", "thai chili", "chicken stock",
-    "vegetable stock", "beef stock", "sour cream", "worcestershire sauce", "A1 sauce",
-    "bean sprouts", "mango", "thyme", "arugula", "coconut milk", "strawberry jelly", "pesto",
-    "miso", "fish sauce", "maple syrup", "hot sauce", "caper", "ranch dressing", "salsa"
-  ]
-
-  INGREDIENTS.push(...UPDATE_INGREDIENTS)
-
   const ALLOWED_LANGUAGES = ["English", "Korean", "Spanish"]
 
   const ALLOWED_EMAIL_DOMAINS = [
@@ -78,6 +56,7 @@ export default function Home() {
   const [aiResult, setAiResult] = useState<string | null>(null)
   const [emailToSend, setEmailToSend] = useState("")
   const [emailError, setEmailError] = useState<string | null>(null)
+  const [dietaryRestriction, setDietaryRestriction] = useState("none");
 
   const router = useRouter()
 
@@ -279,6 +258,57 @@ export default function Home() {
           ))}
         </select>
       </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-200 mb-1">
+          Dietary Restriction
+        </label>
+        <div className="flex flex-col gap-1">
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              name="dietaryRestriction"
+              value="none"
+              checked={dietaryRestriction === "none"}
+              onChange={() => setDietaryRestriction("none")}
+              className="mr-2"
+            />
+            No Restrictions
+          </label>
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              name="dietaryRestriction"
+              value="nut_allergy"
+              checked={dietaryRestriction === "nut_allergy"}
+              onChange={() => setDietaryRestriction("nut_allergy")}
+              className="mr-2"
+            />
+            Nut Allergy
+          </label>
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              name="dietaryRestriction"
+              value="gluten"
+              checked={dietaryRestriction === "gluten"}
+              onChange={() => setDietaryRestriction("gluten")}
+              className="mr-2"
+            />
+            Gluten-Free
+          </label>
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              name="dietaryRestriction"
+              value="vegetarian"
+              checked={dietaryRestriction === "vegetarian"}
+              onChange={() => setDietaryRestriction("vegetarian")}
+              className="mr-2"
+            />
+            Vegetarian
+          </label>
+        </div>
+      </div>
       {fridge.length >= 3 && (
         <div className="mt-4">
           <button
@@ -299,6 +329,7 @@ export default function Home() {
                     ingredients: fridge,
                     language: selectedLanguage,
                     userId: (await supabase.auth.getSession()).data.session?.user.id,
+                    dietaryRestriction,
                   }),
                 })
 
