@@ -38,9 +38,7 @@ export default function Home() {
 
   const ALLOWED_LANGUAGES = ["English", "Korean", "Spanish"]
 
-  const ALLOWED_EMAIL_DOMAINS = [
-    "gmail.com", "outlook.com", "icloud.com", "protonmail.com", "yahoo.com"
-  ]
+  // Removed unused ALLOWED_EMAIL_DOMAINS as it's no longer needed after removing email functionality
 
   const [email, setEmail] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -113,7 +111,7 @@ export default function Home() {
         <div className="p-6 md:p-8">
           <UserHeader />
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">What's in your fridge?</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">What&apos;s in your fridge?</h1>
             <p className="text-gray-300">Add at least 3, and up to 5 ingredients to get recipe suggestions</p>
           </div>
 
