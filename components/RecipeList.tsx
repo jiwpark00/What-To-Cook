@@ -4,10 +4,14 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { FiSearch, FiX } from 'react-icons/fi';
 
+interface RecipeInstructions {
+  [key: string]: string | string[] | number | boolean | null | undefined;
+}
+
 interface RecipeData {
   title?: string;
   ingredients?: string[] | string;
-  instructions?: string | { [key: string]: any };
+  instructions?: string | RecipeInstructions;
 }
 
 interface LogRow {
@@ -31,10 +35,10 @@ const RecipeList = ({ initialData, initialCount, page }: RecipeListProps) => {
   
   useEffect(() => {
     setIsClient(true);
-  });
+  }, []); // Empty dependency array to run only once
 
   // Helper function to safely extract recipe data
-  const getRecipeData = (row: any) => {
+  const getRecipeData = (row: LogRow): RecipeData => {
     try {
       // Try to parse as JSON first
       const response = typeof row.response === 'string' 
@@ -57,7 +61,7 @@ const RecipeList = ({ initialData, initialCount, page }: RecipeListProps) => {
           instructions: String(response || '')
         };
       }
-    } catch (e) {
+    } catch (error) {
       // If JSON parsing fails, treat the whole response as instructions
       return {
         title: 'Recipe',
@@ -68,12 +72,12 @@ const RecipeList = ({ initialData, initialCount, page }: RecipeListProps) => {
   };
 
   // Process and filter recipes based on search query
-  const { filteredRecipes, totalCount } = useMemo(() => {
-    if (!initialData) return { filteredRecipes: [], totalCount: 0 };
+  const { filteredRecipes } = useMemo(() => {
+    if (!initialData) return { filteredRecipes: [] };
 
     const query = searchQuery.toLowerCase().trim();
     if (!query) {
-      return { filteredRecipes: initialData, totalCount: initialCount };
+      return { filteredRecipes: initialData };
     }
 
     const filtered = initialData.filter(row => {
@@ -96,8 +100,8 @@ const RecipeList = ({ initialData, initialCount, page }: RecipeListProps) => {
              instructions.includes(query);
     });
 
-    return { filteredRecipes: filtered, totalCount: filtered.length };
-  }, [initialData, searchQuery, initialCount]);
+    return { filteredRecipes: filtered };
+  }, [initialData, searchQuery]);
 
   // Calculate pagination for filtered results
   const paginatedRecipes = useMemo(() => {
@@ -238,7 +242,7 @@ const RecipeList = ({ initialData, initialCount, page }: RecipeListProps) => {
             </div>
             {showSearchResultsInfo && (
               <p className="mt-2 text-sm text-gray-400 text-left">
-                Found {filteredRecipes.length} {filteredRecipes.length === 1 ? 'recipe' : 'recipes'} matching "{searchQuery}"
+                Found {filteredRecipes.length} {filteredRecipes.length === 1 ? 'recipe' : 'recipes'} matching &quot;{searchQuery}&quot;
               </p>
             )}
           </div>
