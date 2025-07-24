@@ -15,18 +15,16 @@ interface LogRow {
 }
 
 interface PageProps {
-  searchParams: Promise<{ page?: string | string[] }> | { page?: string | string[] };
+  searchParams: { page?: string | string[] };
 }
 
 export default async function RecentPage({ searchParams }: PageProps) {
-  // Handle searchParams whether it's a Promise or not
-  const params = await (searchParams instanceof Promise ? searchParams : Promise.resolve(searchParams));
+  // Await searchParams if it's a promise
+  const params = await searchParams;
   
   // Handle pagination
-  const rawPage = Array.isArray(params.page)
-    ? params.page[0]
-    : params.page;
-  const page = Math.max(0, Number(rawPage) || 0);
+  const rawPage = params.page;
+  const page = Math.max(0, Number(Array.isArray(rawPage) ? rawPage[0] : rawPage) || 0);
 
   // Create Supabase client
   const supabase = createClient<Database>(
