@@ -15,13 +15,13 @@ interface LogRow {
 }
 
 interface PageProps {
-  searchParams: Promise<{ page?: string | string[] }> | { page?: string | string[] };
+  searchParams?: Promise<any>;
 }
 
 export default async function RecentPage({ searchParams }: PageProps) {
-  // Always await searchParams (works for both Promise and object)
-  const params = await Promise.resolve(searchParams);
-  
+  // Always await searchParams, default to empty object
+  const params = (await (searchParams ?? Promise.resolve({}))) as { page?: string | string[] };
+
   // Handle pagination
   const rawPage = params.page;
   const page = Math.max(0, Number(Array.isArray(rawPage) ? rawPage[0] : rawPage) || 0);
