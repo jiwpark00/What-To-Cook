@@ -74,18 +74,40 @@ Keep it short and practical.`
         const text = result.response.text()
         aiResponse = text
     } catch (err) {
-        console.log(err)
+        console.log("Gemini API error:", err)
         return NextResponse.json({ error: "Gemini failed to respond." }, { status: 500 })
     }
 
-    // Log usage
-    await supabase.from("llm_logs").insert({
+    // Log usage with proper error handling
+    console.log("About to insert log with data:", {
         user_id: userId,
         ingredients,
         language,
-        dietaryRestriction,
         response: aiResponse,
     })
+
+    const { data: insertedData, error: insertError } = await supabase
+        .from("llm_logs")
+        .insert({
+            user_id: userId,
+            ingredients,
+            language,
+            response: aiResponse,
+        })
+        .select() // This will return the inserted row
+
+    if (insertError) {
+        console.error("Failed to insert log:", insertError)
+        // Still return success to user, but log the error
+        console.error("Insert error details:", {
+            code: insertError.code,
+            message: insertError.message,
+            details: insertError.details,
+            hint: insertError.hint
+        })
+    } else {
+        console.log("Successfully inserted log:", insertedData)
+    }
 
     return NextResponse.json({ result: aiResponse })
 }
