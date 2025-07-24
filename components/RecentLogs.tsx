@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@supabase/supabase-js"
-import StarRating from "./StarRating"
 
 interface Log {
   id: number
@@ -62,9 +61,6 @@ export default function RecentLogs() {
             <p className="text-sm mt-2">
               {log.response.slice(0, 200)}...
             </p>
-            <div className="mt-2">
-              <StarRating logId={log.id} initialRating={log.rating} />
-            </div>
           </li>
         ))}
       </ul>
