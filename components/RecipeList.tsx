@@ -61,7 +61,7 @@ const RecipeList = ({ initialData, initialCount, page }: RecipeListProps) => {
           instructions: String(response || '')
         };
       }
-    } catch (error) {
+    } catch (_error) {
       // If JSON parsing fails, treat the whole response as instructions
       return {
         title: 'Recipe',
