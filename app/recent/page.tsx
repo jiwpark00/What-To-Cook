@@ -1,5 +1,4 @@
 // app/recent/page.tsx  – Server Component
-import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 
