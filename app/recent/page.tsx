@@ -15,7 +15,7 @@ interface LogRow {
 }
 
 interface PageProps {
-  searchParams?: Promise<any>;
+  searchParams?: Promise<unknown>;
 }
 
 export default async function RecentPage({ searchParams }: PageProps) {
