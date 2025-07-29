@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        style={{ backgroundColor: '#3b3b3b !important' }}
+        style={{ backgroundColor: '#121827 !important' }}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NavBar /> {/* ← header appears on every page */}

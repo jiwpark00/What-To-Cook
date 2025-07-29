@@ -12,15 +12,15 @@ export default function NavBar() {
     const pathname = usePathname();
 
     return (
-        <nav className="mb-6 flex gap-4 border-b pb-2">
+        <nav className="mb-8 flex gap-4 items-center px-6 py-3 bg-gray-900 backdrop-blur-md">
             {links.map(({ href, label }) => (
                 <Link
                     key={href}
                     href={href}
-                    className={`rounded-md px-3 py-1 transition
+                    className={`rounded-md px-4 py-2 font-medium transition-all duration-200 text-sm focus:outline-none border border-transparent
                         ${pathname === href
-                            ? "bg-gray-900 text-white"
-                            : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+                            ? "text-white border-white"
+                            : "text-gray-200 hover:border-white hover:text-white"}`}
                 >
                     {label}
                 </Link>
