@@ -213,10 +213,18 @@ const RecipeList = ({ initialData, initialCount, page }: RecipeListProps) => {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-purple-400 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-            Latest AI-Generated Recipes
-          </h1>
-          <p className="text-gray-300 text-lg mb-6">Discover and explore recipes created by our community</p>
+          <h1 className="text-4xl font-bold text-white mb-4">Latest AI-Generated Recipes</h1>
+          <p className="text-gray-300 text-lg mb-3">Discover and explore recipes created by our community</p>
+          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 max-w-4xl mx-auto">
+            <p className="text-gray-300 text-lg mb-2">
+              These recipes are <span className="text-yellow-300">AI-generated</span> based on community inputs and preferences.
+            </p>
+            <p className="text-gray-400 text-lg">
+              💡 <span className="font-medium">Note:</span> Each recipe is uniquely created by our AI based on the ingredients and preferences provided.
+            </p>
+          </div>
+
+          <br></br>
           
           {/* Search Bar */}
           <div className="relative max-w-2xl mx-auto mb-8">

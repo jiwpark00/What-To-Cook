@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const links = [
     { href: "/", label: "Home" },
     { href: "/recent", label: "Recent" },
+    { href: "/recipes", label: "Recipes" },
 ];
 
 export default function NavBar() {
@@ -17,7 +18,7 @@ export default function NavBar() {
                 <Link
                     key={href}
                     href={href}
-                    className={`rounded-md px-4 py-2 font-medium transition-all duration-200 text-sm focus:outline-none border border-transparent
+                    className={`rounded-md px-4 py-2 font-medium transition-all duration-200 text-base focus:outline-none border border-transparent
                         ${pathname === href
                             ? "text-white border-white"
                             : "text-gray-200 hover:border-white hover:text-white"}`}
