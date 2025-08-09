@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { FiSearch, FiX } from 'react-icons/fi';
+import DOMPurify from 'dompurify';
 
 interface RecipeInstructions {
   [key: string]: string | string[] | number | boolean | null | undefined;
@@ -194,9 +195,11 @@ const RecipeList = ({ initialData, initialCount, page }: RecipeListProps) => {
                 <div 
                   className="space-y-3"
                   dangerouslySetInnerHTML={{ 
-                    __html: String(recipeData.instructions)
-                      .replace(/\n\s*\n/g, '</p><p>')
-                      .replace(/\n/g, '<br />')
+                    __html: DOMPurify.sanitize(
+                      String(recipeData.instructions)
+                        .replace(/\n\s*\n/g, '</p><p>')
+                        .replace(/\n/g, '<br />')
+                    )
                   }} 
                 />
               ) : (
